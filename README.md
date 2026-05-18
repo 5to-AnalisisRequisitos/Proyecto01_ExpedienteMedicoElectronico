@@ -2,9 +2,9 @@
 
 Prototipo funcional de Expediente Médico Electrónico para consultorios médicos pequeños.
 
-**Versión:** 3.0
-**Conforme a:** Estándar IEEE 830-1998 y Caso de Uso "Apertura de Expediente Médico"
-**Autor:** Edson Joel Carrera Avila
+**Autor:** Edson Joel Carrera Avila <br>
+**Estándar:** IEEE 830-1998 <br>
+**Versión:** 3.0 <br>
 
 ---
 
@@ -175,19 +175,19 @@ El sistema opera con 7 tablas principales en SQLite:
 
 ```
 eme-prototipo/
-├── server.js              # Backend Node.js + Express (32 endpoints)
+├── server.js              # Backend Node.js + Express
 ├── setup.js               # Auto-generador del archivo .env
 ├── package.json           # Dependencias y scripts npm
 ├── README.md              # Este archivo
 ├── iniciar.sh             # Script de arranque Linux/macOS
 ├── iniciar.bat            # Script de arranque Windows
-├── .env                   # Variables de entorno (auto-generado, no versionado)
+├── .env                   # Variables de entorno (auto-generado)
 ├── .gitignore             # Exclusiones de Git
 ├── eme.db                 # Base de datos SQLite (auto-generada)
 └── public/
     ├── index.html         # Frontend SPA con todas las pantallas
     ├── styles.css         # Estilos visuales del sistema
-    └── app.js             # Lógica del cliente (sessionStorage, modales, timer)
+    └── app.js             # Lógica del cliente
 ```
 
 ---
@@ -213,8 +213,3 @@ LOGIN_BLOCK_MINUTES=15
 - **`EME_ERS_IEEE830.md`** – Especificación de Requisitos de Software conforme al estándar IEEE 830-1998.
 - **`EME_Diagramas_PlantUML.md`** – 8 diagramas UML formales en formato PlantUML.
 - **`EME_Esquema_BD_v2.md`** – Esquema completo de la base de datos.
-
----
-
-Desarrollado por **Edson Joel Carrera Avila**.
-Licencia MIT.
