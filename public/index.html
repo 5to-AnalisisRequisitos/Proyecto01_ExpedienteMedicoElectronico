@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EME - Expediente Médico Electrónico</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE BIENVENIDA -->
+  <div id="welcome-screen" class="screen">
+    <div class="login-container">
+      <div class="login-box">
+        <div class="login-header">
+          <div class="login-icon">⚕</div>
+          <h1>Bienvenido al EME</h1>
+          <p>Expediente Médico Electrónico para tu consultorio</p>
+        </div>
+        <div class="welcome-content">
+          <div class="alert alert-warning" style="margin-bottom: 1.5rem;">
+            <strong>⚙ Configuración inicial</strong><br>
+            El sistema requiere primero un <strong>administrador</strong>. Este usuario podrá crear las cuentas de los médicos y recepcionistas posteriormente.
+          </div>
+          <p style="text-align: center; color: var(--color-text-secondary); margin-bottom: 1.5rem;">
+            Crea la cuenta del administrador para comenzar.
+          </p>
+          <button class="btn btn-primary btn-full" onclick="showScreen('register-screen')">
+            Crear administrador
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE REGISTRO -->
+  <div id="register-screen" class="screen">
+    <div class="login-container">
+      <div class="login-box" style="max-width: 480px;">
+        <div class="login-header">
+          <div class="login-icon">⚙</div>
+          <h1>Configuración inicial</h1>
+          <p>Crea la cuenta del administrador del sistema</p>
+        </div>
+
+        <form id="register-form">
+          <input type="hidden" id="reg-rol" value="admin">
+
+          <div class="alert alert-info" style="margin-bottom: 1rem;">
+            ℹ Este es el primer usuario del sistema y tendrá rol de <strong>Administrador</strong>. Podrás crear cuentas para médicos y recepcionistas desde dentro del sistema.
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre *</label>
+              <input type="text" id="reg-nombre" placeholder="Ej: Carlos" required>
+            </div>
+            <div class="form-group">
+              <label>Apellido *</label>
+              <input type="text" id="reg-apellido" placeholder="Ej: García" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="reg-email" placeholder="admin@empresa.com" required>
+            <small class="form-hint">Será tu nombre de usuario para iniciar sesión</small>
+          </div>
+
+          <!-- Campos ocultos (no aplicables al admin) -->
+          <div id="medico-fields" class="hidden">
+            <input type="text" id="reg-especialidad" style="display:none;">
+            <input type="text" id="reg-licencia" style="display:none;">
+          </div>
+
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="tel" id="reg-telefono" placeholder="Ej: 999-999-9999">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Contraseña *</label>
+              <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres" required minlength="8">
+            </div>
+            <div class="form-group">
+              <label>Confirmar contraseña *</label>
+              <input type="password" id="reg-password-confirm" placeholder="Repite la contraseña" required>
+            </div>
+          </div>
+
+          <div id="register-error" class="error-message hidden"></div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="showInitialScreen()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Crear administrador</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE CÓDIGO DE RECUPERACIÓN -->
+  <div id="recovery-code-screen" class="screen">
+    <div class="login-container">
+      <div class="login-box" style="max-width: 500px;">
+        <div class="login-header">
+          <div class="login-icon">🔑</div>
+          <h1>¡Cuenta creada!</h1>
+          <p>Tu código de recuperación</p>
+        </div>
+
+        <div class="alert alert-warning">
+          <strong>⚠ IMPORTANTE:</strong> Guarda este código en un lugar seguro. Es la <strong>única forma</strong> de recuperar tu contraseña.
+        </div>
+
+        <div class="recovery-code-box">
+          <p class="recovery-code-label">Tu código:</p>
+          <div class="recovery-code" id="recovery-code-display"></div>
+        </div>
+
+        <div class="form-actions" style="flex-direction: column; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary btn-full" onclick="copyRecoveryCode()">
+            📋 Copiar código
+          </button>
+          <button type="button" class="btn btn-secondary btn-full" onclick="downloadRecoveryCode()">
+            💾 Descargar como archivo
+          </button>
+          <label class="confirm-checkbox">
+            <input type="checkbox" id="confirm-saved"> 
+            He guardado mi código en un lugar seguro
+          </label>
+          <button type="button" class="btn btn-primary btn-full" id="continue-btn" disabled onclick="goToLogin()">
+            Continuar al login
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="login-screen" class="screen">
+    <div class="login-container">
+      <div class="login-box">
+        <div class="login-header">
+          <div class="login-icon">⚕</div>
+          <h1>EME Consultorio</h1>
+          <p>Inicia sesión</p>
+        </div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="tu@email.com" required>
+          </div>
+
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="login-password" placeholder="••••••••" required>
+          </div>
+
+          <div id="login-error" class="error-message hidden"></div>
+
+          <button type="submit" class="btn btn-primary btn-full">
+            Iniciar sesión
+          </button>
+
+          <div class="login-links">
+            <a href="#" onclick="showScreen('forgot-password-screen'); return false;">¿Olvidaste tu contraseña?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECUPERAR PASO 1 -->
+  <div id="forgot-password-screen" class="screen">
+    <div class="login-container">
+      <div class="login-box">
+        <div class="login-header">
+          <div class="login-icon">🔓</div>
+          <h1>Recuperar contraseña</h1>
+          <p>Ingresa tu email y código de recuperación</p>
+        </div>
+        <form id="forgot-form">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="forgot-email" required>
+          </div>
+          <div class="form-group">
+            <label>Código de recuperación</label>
+            <input type="text" id="forgot-codigo" placeholder="EME-XXXX-XXXX-XXXX-XXXX" required style="font-family: monospace; text-transform: uppercase;">
+          </div>
+          <div id="forgot-error" class="error-message hidden"></div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="showScreen('login-screen')">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Verificar código</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECUPERAR PASO 2 -->
+  <div id="reset-password-screen" class="screen">
+    <div class="login-container">
+      <div class="login-box">
+        <div class="login-header">
+          <div class="login-icon">🔐</div>
+          <h1>Nueva contraseña</h1>
+        </div>
+        <form id="reset-form">
+          <div class="form-group">
+            <label>Nueva contraseña</label>
+            <input type="password" id="reset-password" required minlength="8">
+          </div>
+          <div class="form-group">
+            <label>Confirmar contraseña</label>
+            <input type="password" id="reset-password-confirm" required>
+          </div>
+          <div id="reset-error" class="error-message hidden"></div>
+          <div class="alert alert-info">
+            Al cambiar tu contraseña, se generará un nuevo código de recuperación.
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Restablecer contraseña</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN PRINCIPAL -->
+  <div id="app-screen" class="screen">
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <span class="navbar-icon">⚕</span>
+        <span>EME Consultorio</span>
+      </div>
+      <div class="navbar-menu" id="navbar-menu">
+        <!-- Se llenan dinámicamente según el rol -->
+      </div>
+      <div class="navbar-user">
+        <span id="navbar-user-name"></span>
+        <span class="badge-rol" id="navbar-user-rol"></span>
+        <button class="btn btn-secondary btn-sm" onclick="logout()">Salir</button>
+      </div>
+    </nav>
+
+    <main class="main-content">
+
+      <!-- DASHBOARD -->
+      <div id="dashboard-page" class="page active">
+        <div class="page-header">
+          <div>
+            <h1 id="welcome-message">Bienvenido</h1>
+            <p class="text-secondary" id="today-date"></p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <p class="stat-label">Citas hoy</p>
+            <p class="stat-value blue" id="stat-citas-hoy">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Pacientes totales</p>
+            <p class="stat-value green" id="stat-pacientes">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Expedientes activos</p>
+            <p class="stat-value purple" id="stat-expedientes">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Consultas este mes</p>
+            <p class="stat-value orange" id="stat-consultas">0</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <h2>Citas de hoy</h2>
+            <div id="citas-hoy-list" class="appointments-list">
+              <p class="text-secondary">Cargando...</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Acciones rápidas</h2>
+            <div class="quick-actions" id="quick-actions">
+              <!-- Dinámico según rol -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- PACIENTES -->
+      <div id="pacientes-page" class="page">
+        <div class="page-header">
+          <div>
+            <h1>Pacientes</h1>
+            <p class="text-secondary" style="font-size: 13px; margin: 4px 0 0 0;">Buscar, crear, editar y agendar citas desde un solo lugar</p>
+          </div>
+          <button class="btn btn-success" onclick="abrirModalNuevoPaciente()">+ Nuevo paciente</button>
+        </div>
+
+        <div class="card">
+          <div class="search-bar">
+            <input type="text" id="search-pacientes" placeholder="Buscar por nombre, CURP o teléfono..." oninput="searchPatients()">
+          </div>
+        </div>
+
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Expediente</th>
+                <th>Nombre</th>
+                <th>CURP</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="pacientes-list">
+              <tr><td colspan="5" class="text-center">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CITAS -->
+      <div id="citas-page" class="page">
+        <div class="page-header">
+          <h1>Citas</h1>
+        </div>
+
+        <div class="alert alert-info" style="margin-bottom: 1rem; padding: 12px 16px; background: #FAEEDA; border-left: 3px solid #BA7517; border-radius: 6px; color: #633806; font-size: 13px;">
+          ℹ Para agendar una nueva cita, ve a <strong>Pacientes</strong> y haz click en <strong>📅 Agendar</strong> junto al paciente.
+        </div>
+
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Médico</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="citas-list">
+              <tr><td colspan="7" class="text-center">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN: GESTIÓN DE USUARIOS -->
+      <div id="admin-usuarios-page" class="page">
+        <div class="page-header">
+          <h1>Gestión de usuarios</h1>
+          <button class="btn btn-primary" onclick="showCrearUsuario()">+ Crear usuario</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Especialidad / Licencia</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-usuarios-list">
+              <tr><td colspan="6" class="text-center">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN: AUDITORÍA GLOBAL -->
+      <div id="admin-auditoria-page" class="page">
+        <div class="page-header">
+          <h1>Auditoría global del sistema</h1>
+        </div>
+        <div class="card">
+          <div class="form-row" style="margin-bottom: 1rem;">
+            <div class="form-group">
+              <label>Filtrar por acción</label>
+              <select id="filtro-accion" onchange="loadAdminAuditoria()">
+                <option value="">Todas</option>
+                <option value="CREATE">CREATE (crear)</option>
+                <option value="UPDATE">UPDATE (actualizar)</option>
+                <option value="DELETE">DELETE (eliminar)</option>
+                <option value="RESTORE">RESTORE (restaurar)</option>
+                <option value="LOGIN">LOGIN</option>
+                <option value="LOGIN_FAILED">LOGIN_FAILED</option>
+                <option value="ACCESS_DENIED">ACCESS_DENIED</option>
+                <option value="PASSWORD_RESET">PASSWORD_RESET</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Filtrar por email del usuario</label>
+              <input type="text" id="filtro-usuario" placeholder="Ej: dr@" onkeyup="if(event.key==='Enter')loadAdminAuditoria()">
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+              <button class="btn btn-primary" onclick="loadAdminAuditoria()">Filtrar</button>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Acción</th>
+                <th>Entidad</th>
+                <th>Descripción</th>
+                <th>IP</th>
+              </tr>
+            </thead>
+            <tbody id="admin-auditoria-list">
+              <tr><td colspan="6" class="text-center">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN: PACIENTES ELIMINADOS -->
+      <div id="admin-eliminados-page" class="page">
+        <div class="page-header">
+          <h1>Pacientes eliminados</h1>
+        </div>
+        <div class="alert alert-warning" style="margin-bottom: 1rem;">
+          ℹ Aquí puedes restaurar pacientes que fueron eliminados por los médicos. Al restaurar, su expediente se reactiva automáticamente.
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Expediente</th>
+                <th>Paciente</th>
+                <th>CURP</th>
+                <th>Eliminado por</th>
+                <th>Fecha / Motivo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-eliminados-list">
+              <tr><td colspan="6" class="text-center">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AUDITORÍA -->
+      <div id="auditoria-page" class="page">
+        <div class="page-header">
+          <h1>Mi actividad</h1>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Acción</th>
+                <th>Entidad</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody id="auditoria-list">
+              <tr><td colspan="4" class="text-center">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="paciente-detail-page" class="page">
+        <button class="btn btn-secondary btn-sm" onclick="navigateTo('pacientes')">← Volver</button>
+        <div id="paciente-detail-content"></div>
+      </div>
+
+      <div id="consulta-page" class="page">
+        <button class="btn btn-secondary btn-sm" onclick="navigateTo('citas')">← Volver</button>
+        <div id="consulta-content"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Modal</h2>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
