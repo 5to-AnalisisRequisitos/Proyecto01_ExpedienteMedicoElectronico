@@ -33,26 +33,23 @@ Prototipo funcional de Expediente Médico Electrónico para consultorios médico
 - Node.js v18 o superior
 - npm v9 o superior
 
-### Opción A: Scripts automáticos (recomendado)
+### Linux / macOS
 
-**Linux / macOS:**
+Abre una terminal dentro de la carpeta del proyecto y ejecuta la siguiente insctrucción:
+
 ```bash
+chmod +x iniciar.sh
 ./iniciar.sh
 ```
 
-**Windows:** doble clic en `iniciar.bat`
-
-El script verifica que Node.js esté instalado, instala las dependencias si no existen y lanza el servidor automáticamente.
-
-### Opción B: Manual
+**Windows** 
 
 ```bash
-# 1. Instalar dependencias
-npm install
-
-# 2. Iniciar el servidor (auto-generará la BD y el archivo .env)
-npm start
+Basta con hacer doble clic en "iniciar.bat"
 ```
+
+En ambos casos, el script verifica que Node.js esté instalado, instala las dependencias si no existen y lanza el servidor automáticamente.
+
 
 Abre tu navegador en: **http://localhost:3000**
 
@@ -205,11 +202,3 @@ LOGIN_BLOCK_MINUTES=15
 ```
 
 **Importante:** El archivo `.env` está en `.gitignore` y nunca debe versionarse. Cada instalación tiene su propio secreto único.
-
----
-
-## 📚 Documentación adicional
-
-- **`EME_ERS_IEEE830.md`** – Especificación de Requisitos de Software conforme al estándar IEEE 830-1998.
-- **`EME_Diagramas_PlantUML.md`** – 8 diagramas UML formales en formato PlantUML.
-- **`EME_Esquema_BD_v2.md`** – Esquema completo de la base de datos.
