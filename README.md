@@ -1,4 +1,4 @@
-# 🏥 Software de Expediente Médico Electrónico
+# 🏥 Reporte01_ExpedienteMedicoElectronico
 
 Prototipo funcional de Expediente Médico Electrónico para consultorios médicos pequeños.
 
